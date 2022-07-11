@@ -11,6 +11,9 @@ export default {
   components: {
     MainHeader,
   },
+  mounted() {
+    this.$router.push("/mytimetable/day/dates");
+  },
 };
 </script>
 
@@ -21,7 +24,16 @@ export default {
   box-sizing: border-box;
 }
 
+html,
+body,
+#app {
+  height: 100%;
+  width: 100%;
+}
+
 #app {
   font-family: "Montserrat", sans-serif;
+  display: flex;
+  flex-direction: column;
 }
 </style>

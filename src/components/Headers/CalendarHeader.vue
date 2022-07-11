@@ -1,14 +1,14 @@
 <template>
   <div class="calendar-header">
     <div class="calendar-modules">
-      <router-links
+      <router-link
         :to="`/mytimetable/${pathSplited[2]}/${pathSplited[3]}`"
         :class="{ highlighted: pathSplited[1] == 'mytimetable' }"
         v-text="'Моё расписание'"
       />
 
       <router-link
-        :to="`/tobeagreed//${pathSplited[2]}/${pathSplited[3]}`"
+        :to="`/tobeagreed/${pathSplited[2]}/${pathSplited[3]}`"
         :class="{ highlighted: pathSplited[1] == 'tobeagreed' }"
         v-text="'На согласовании'"
       />
@@ -68,7 +68,6 @@ export default {
   mounted() {},
   computed: {
     pathSplited() {
-      console.log(this.$router.currentRoute.value.path.split("/"));
       return this.$router.currentRoute.value.path.split("/");
     },
   },
@@ -215,6 +214,7 @@ export default {
       align-items: center;
       justify-content: center;
     }
+
     .highlighted {
       font-weight: 600;
 

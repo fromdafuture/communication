@@ -69,16 +69,21 @@
 
 .nav-and-user {
   display: flex;
-  justify-content: space-between;
+  flex-grow: 1;
+  flex-shrink: 1;
+  justify-content: flex-end;
   align-items: center;
   height: 100%;
   gap: 69px;
+  margin-left: 50px;
 }
 
 nav {
   display: flex;
-  gap: 30px;
+  flex: 1 1 580px;
+  max-width: 580px;
   height: 100%;
+  justify-content: space-between;
 
   a {
     text-decoration: none;
@@ -90,10 +95,12 @@ nav {
     display: flex;
     align-items: center;
     position: relative;
+
     &.router-link-exact-active {
       font-weight: 600;
     }
 
+    &.router-link-exact-active:after,
     &:hover:after {
       content: "";
       display: block;

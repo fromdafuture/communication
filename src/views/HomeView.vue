@@ -1,8 +1,9 @@
 <template>
   <div class="home">
     <CalendarHeader />
-    <img alt="Vue logo" src="../assets/logo.png" />
-    <router-view></router-view>
+    <div class="container">
+      <router-view></router-view>
+    </div>
   </div>
 </template>
 
@@ -17,3 +18,18 @@ export default {
   },
 };
 </script>
+
+<style lang="scss" scoped>
+.home {
+  display: flex;
+  flex: 1 0 0;
+  flex-direction: column;
+  background-color: azure;
+}
+
+.container {
+  display: flex;
+  flex-direction: column;
+  flex: 1 0 0;
+}
+</style>

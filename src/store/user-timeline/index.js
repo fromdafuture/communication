@@ -1,10 +1,10 @@
 import { createStore } from "vuex";
-import userTimeline from "./user-timeline";
+import state from "./state";
 
 export default createStore({
-  state: {},
+  state,
   getters: {},
   mutations: {},
   actions: {},
-  modules: { userTimeline },
+  modules: {},
 });
