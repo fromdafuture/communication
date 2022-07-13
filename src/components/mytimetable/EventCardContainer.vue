@@ -3,11 +3,10 @@
     class="day-time-table__event"
     :style="{
       position: 'absolute',
-      left: `${dayEvent.left}px`,
-      left: `${10}% `,
-      top: `${dayEvent.timeStart * 50 - parentStart}px`,
-      height: (dayEvent.timeEnd - dayEvent.timeStart) * 50 + 'px',
-      width: `${100 - 10}% `,
+      left: `${12}% `,
+      top: `${timeStart - parentTimeStart}px`,
+      height: timeEnd - timeStart + 'px',
+      width: `${100 - 12}% `,
     }"
   >
     <EventCard :dayEvent="dayEvent" />
@@ -29,7 +28,32 @@ import EventCard from "@/components/mytimetable/EventCard.vue";
 export default {
   name: "EventCardContainer",
   components: { EventCard },
-  props: { dayEvent: {}, parentStart: { type: Number, default: 0 } },
+  props: { dayEvent: {}, parentStart: { type: Date, default: null } },
+  computed: {
+    timeStart() {
+      return (
+        ((this.dayEvent.timeStart.getHours() * 60 +
+          this.dayEvent.timeStart.getMinutes()) /
+          60) *
+        200
+      );
+    },
+    timeEnd() {
+      return (
+        ((this.dayEvent.timeEnd.getHours() * 60 +
+          this.dayEvent.timeEnd.getMinutes()) /
+          60) *
+        200
+      );
+    },
+    parentTimeStart() {
+      return this.parentStart
+        ? ((this.parentStart.getHours() * 60 + this.parentStart.getMinutes()) /
+            60) *
+            200
+        : 0;
+    },
+  },
 };
 </script>
 
@@ -37,6 +61,5 @@ export default {
 .day-time-table__event {
   content: "";
   position: absolute;
-  background-color: #129f0243;
 }
 </style>

@@ -27,91 +27,21 @@
 
       <div class="day-time-table" style="backgroun-color: #44556677">
         <div v-for="day in 7" :key="day" class="day-time-table__date">
-          <template v-if="day == 2">
+          <div class="day-time-table__event-card-container">
             <EventCardContainer
-              v-for="event in computedEvents(day)"
-              :key="event.id"
-              :dayEvent="event"
+              v-for="dayEvent in computedEvents(day - 1)"
+              :key="dayEvent.id"
+              :dayEvent="dayEvent"
             />
-          </template>
-        </div>
-      </div>
-
-      <div class="day-time-table">
-        <div class="day-time-table__date" v-if="events.length > 0">
-          <div
-            v-for="(event, index) in events.filter((t) => t.day == 2)"
-            :key="event.id"
-            class="day-time-table__event"
-            :style="{
-              top: `${event.timeStart * 50}px`,
-              left: index * 5 + 'px',
-              height: (event.timeEnd - event.timeStart) * 50 + 'px',
-              border: '1px dashed green',
-            }"
-          >
-            {{ event.id }}
           </div>
         </div>
-        <!-- <div class="day-time-table__date" v-if="events.length > 0">
-          <div
-            v-for="event in computedEvents(1)"
-            :key="event.id"
-            class="day-time-table__event"
-            :style="{
-              position: 'absolute',
-              transform: `translate( ${event.left}px, 
-              ${event.timeStart * 50}px)`,
-              height: (event.timeEnd - event.timeStart) * 50 + 'px',
-              width: '100%',
-            }"
-          >
-            {{ event.ev.id }}
-            <template v-if="event.subP.length > 0">
-              <div
-                v-for="(subevent, index) in event.subP"
-                :key="'dfdsa' + index"
-                class="day-time-table__event"
-                :style="{
-                  position: 'absolute',
-                  top: `${(subevent.timeStart - event.timeStart) * 50}px`,
-                  left: '10%',
-                  width: `${100 - 10}% `,
-                  height: (subevent.timeEnd - subevent.timeStart) * 50 + 'px',
-                }"
-              >
-                {{ subevent.ev.id }}
-
-                <div
-                  v-for="(subsubevent, index1) in subevent.subP"
-                  :key="'dfdsghgha' + index1"
-                  class="day-time-table__event"
-                  :style="{
-                    position: 'absolute',
-                    top: `${
-                      (subsubevent.timeStart -
-                        event.timeStart -
-                        subevent.timeStart) *
-                      50
-                    }px`,
-                    left: '10%',
-                    width: `${100 - 10}% `,
-                    height:
-                      (subsubevent.timeEnd - subsubevent.timeStart) * 50 + 'px',
-                  }"
-                >
-                  {{ subsubevent.ev.id }}
-                </div>
-              </div>
-            </template>
-          </div>
-        </div> -->
       </div>
     </div>
   </div>
 </template>
 
 <script>
+import { mapState } from "vuex";
 import EventCardContainer from "@/components/mytimetable/EventCardContainer.vue";
 
 export default {
@@ -123,7 +53,6 @@ export default {
       currentTimeStr: "",
       currentTimeOffset: 0,
       intervalId: "",
-      events: [],
     };
   },
   beforeMount() {
@@ -133,21 +62,23 @@ export default {
     this.thisUpdateClear();
   },
   mounted() {
-    //this.$refs.dayContainer.scrollTo(0, this.currentTimeOffset - 25);
-    this.events = customEvents;
+    this.$refs.dayContainer.scrollTo(0, this.currentTimeOffset - 25);
 
-    //this.timeUpdateInit();
+    this.timeUpdateInit();
     this.computedEvents(1);
   },
   computed: {
+    ...mapState({
+      events: (state) => state.userTimeline.events,
+    }),
     firstDate() {
       const date = new Date(this.date);
       const day = date.getDay();
       const diff = date.getDate() - day + (day === 0 ? -6 : 1);
 
-      const newd = new Date(date.setDate(diff));
-
-      return newd;
+      date.setDate(diff);
+      date.setHours(0, 0, 0);
+      return date;
     },
   },
   methods: {
@@ -160,7 +91,8 @@ export default {
       clearInterval(this.intervalId);
     },
     setCurrentTime() {
-      const time = new Date(new Date(Date.now()).setMilliseconds(0));
+      let time = new Date();
+      time.setMilliseconds(0);
 
       const hours = time.getHours();
       const minutes = time.getMinutes().toString().padStart(2, 0);
@@ -178,50 +110,21 @@ export default {
       date.setDate(date.getDate() + dayDiff);
 
       const weekDay = days[date.getDay()];
-      const day = date.getDate().toString().padStart(2, 0);
-      const month = date.getMonth().toString().padStart(2, 0);
+      const day = date.getDate().toString().padStart(2, "0");
+      const month = date.getMonth().toString().padStart(2, "0");
       return `${weekDay} ${day}.${month}`;
     },
-    computedEvents(day) {
-      const dayEvents = this.events.filter((t) => t.day == day);
+    computedEvents(dayDiff) {
+      const dateStart = new Date(this.firstDate);
+      dateStart.setDate(dateStart.getDate() + dayDiff);
+      const dayEnd = new Date(dateStart);
+      dayEnd.setHours(23, 59, 59);
 
-      // const includeInPeriod = (pp, dayEvent) => {
-      //   debugger;
-      //   if (
-      //     !pp.some((timeZone) => {
-      //       debugger;
-      //       if (
-      //         (dayEvent.timeStart >= timeZone.timeStart &&
-      //           dayEvent.timeStart <= timeZone.timeEnd) ||
-      //         (dayEvent.timeEnd >= timeZone.timeStart &&
-      //           dayEvent.timeEnd <= timeZone.timeEnd) ||
-      //         (dayEvent.timeStart <= timeZone.timeStart &&
-      //           dayEvent.timeEnd >= timeZone.timeEnd)
-      //       ) {
-      //         return includeInPeriod(timeZone.subP, dayEvent);
-      //       } else {
-      //         pp.push({
-      //           timeStart: dayEvent.timeStart,
-      //           timeEnd: dayEvent.timeEnd,
-      //           ev: dayEvent,
-      //           width: 100,
-      //           subP: [],
-      //         });
-      //         return true;
-      //       }
-      //     })
-      //   ) {
-      //     pp.push({
-      //       timeStart: dayEvent.timeStart,
-      //       timeEnd: dayEvent.timeEnd,
-      //       ev: dayEvent,
-      //       width: 100,
-      //       subP: [],
-      //     });
-      //   }
-      // };
+      const dayEvents = this.events
+        .filter((t) => t.timeStart >= dateStart && t.timeStart <= dayEnd)
+        .sort((t, d) => (t.timeStart < d.timeStart ? -1 : 1));
 
-      const includeInPeriod = (dayEvent, periods, level) => {
+      const includeInPeriod = (dayEvent, periods) => {
         if (
           !periods.some((timeZone) => {
             if (
@@ -232,7 +135,7 @@ export default {
               (dayEvent.timeStart <= timeZone.timeStart &&
                 dayEvent.timeEnd >= timeZone.timeEnd)
             ) {
-              includeInPeriod(dayEvent, timeZone.subP, level + 1);
+              includeInPeriod(dayEvent, timeZone.subP);
               return true;
             }
           })
@@ -240,9 +143,8 @@ export default {
           periods.push({
             timeStart: dayEvent.timeStart,
             timeEnd: dayEvent.timeEnd,
-            ev: dayEvent,
+            event: dayEvent,
             width: 100,
-            left: level * 10,
             subP: [],
           });
         }
@@ -258,27 +160,13 @@ export default {
   },
 };
 
-const customEvents = [
-  { timeStart: 0, timeEnd: 1, day: 1, id: 1, text: "1234567 890" },
-  { timeStart: 0.9, timeEnd: 6, day: 1, id: 2, text: "1234567 890" },
-  { timeStart: 0.8, timeEnd: 6, day: 1, id: 2222, text: "1234567 890" },
-  { timeStart: 3, timeEnd: 4, day: 1, id: 3, text: "1234567 890" },
-  { timeStart: 5, timeEnd: 6, day: 1, id: 4, text: "1234567 890" },
-  { timeStart: 8, timeEnd: 9, day: 1, id: 5, text: "1234567 890" },
-  { timeStart: 0, timeEnd: 1, day: 2, id: 10, text: "1234567 890" },
-  { timeStart: 0.9, timeEnd: 6, day: 2, id: 20, text: "1234567 890" },
-  { timeStart: 0.8, timeEnd: 6, day: 2, id: 22220, text: "1234567 890" },
-  { timeStart: 3, timeEnd: 4, day: 2, id: 30, text: "1234567 890" },
-  { timeStart: 5, timeEnd: 6, day: 2, id: 40, text: "1234567 890" },
-  { timeStart: 8, timeEnd: 9, day: 2, id: 50, text: "1234567 890" },
-];
-
 const days = ["Вс", "Пн", "Вт", "Ср", "Чт", "Пт", "Сб"];
 </script>
 
 <style lang="scss" scoped>
 .day-container {
   width: 100%;
+  min-width: 1024px;
   height: 100%;
   border: 1px solid red;
   background-color: #f5f5f5;
@@ -391,7 +279,6 @@ const days = ["Вс", "Пн", "Вт", "Ср", "Чт", "Пт", "Сб"];
   top: 10px;
   left: 0;
 
-  border: 1px solid blue;
   background-color: #eb57573d;
 
   display: flex;
@@ -402,16 +289,13 @@ const days = ["Вс", "Пн", "Вт", "Ср", "Чт", "Пт", "Сб"];
   &__date {
     width: 250px;
     color: #aeaeae;
-    border: 1px dashed grey;
     position: relative;
   }
 
-  &__event {
-    content: "";
+  &__event-card-container {
     position: absolute;
-    background-color: #aabbcc77;
-
-    float: left;
+    left: -12%;
+    width: 110%;
   }
 }
 </style>
