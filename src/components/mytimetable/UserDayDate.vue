@@ -168,7 +168,6 @@ const days = ["Вс", "Пн", "Вт", "Ср", "Чт", "Пт", "Сб"];
   width: 100%;
   min-width: 1024px;
   height: 100%;
-  border: 1px solid red;
   background-color: #f5f5f5;
   position: relative;
   overflow: auto;

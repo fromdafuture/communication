@@ -20,9 +20,12 @@
             :key="info.id"
           >
             <img
+              class="card__participants-img-replacement"
+              :style="{ backgroundColor: hashColor(info.userName) }"
               v-if="info.userImage"
-              :src="info.userImage"
+              :src="'./user-photos/' + info.userImage"
               :alt="info.userInitials"
+              @error.stop
             />
             <div
               v-else
