@@ -29,7 +29,7 @@
         <div class="user__photo">
           <img
             class="user__photo-img"
-            src=" /user-photos/user001.png"
+            :src="'./user-photos/user001.png'"
             alt="К"
           />
         </div>

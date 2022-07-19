@@ -24,7 +24,6 @@ export default {
   display: flex;
   flex: 1 0 0;
   flex-direction: column;
-  background-color: azure;
 }
 
 .container {
